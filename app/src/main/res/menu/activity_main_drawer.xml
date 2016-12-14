@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--<group android:checkableBehavior="single">-->
+        <!--<item-->
+                <!--android:id="@+id/nav_camera"-->
+                <!--android:icon="@drawable/ic_menu_camera"-->
+                <!--android:title="Import"/>-->
+        <!--<item-->
+                <!--android:id="@+id/nav_gallery"-->
+                <!--android:icon="@drawable/ic_menu_gallery"-->
+                <!--android:title="Gallery"/>-->
+        <!--<item-->
+                <!--android:id="@+id/nav_slideshow"-->
+                <!--android:icon="@drawable/ic_menu_slideshow"-->
+                <!--android:title="Slideshow"/>-->
+        <!--<item-->
+                <!--android:id="@+id/nav_manage"-->
+                <!--android:icon="@drawable/ic_menu_manage"-->
+                <!--android:title="Tools"/>-->
+    <!--</group>-->
+    <item android:title="LAYERS">
+        <menu>
+            <item
+                    android:id="@+id/layer1"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="layer1"
+            />
+            <item
+                    android:id="@+id/layer2"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="layer2"
+            />
+            <item
+                    android:id="@+id/layer3"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="layer3"
+            />
+
+        </menu>
+    </item>
+
+    <item android:title="用户信息">
+        <menu>
+            <item
+                    android:id="@+id/userInfo"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="个人中心"
+            />
+            <item
+                    android:id="@+id/dingyue"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="我的订阅"
+            />
+            <item
+                    android:id="@+id/order"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="我的订单"
+            />
+
+        </menu>
+    </item>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                    android:id="@+id/nav_share"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Share"/>
+            <item
+                    android:id="@+id/nav_send"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Send"/>
+        </menu>
+    </item>
+
+</menu>

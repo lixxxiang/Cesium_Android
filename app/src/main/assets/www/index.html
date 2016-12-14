@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:position="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>My Cesium App</title>
+    <script src="Cesium/Cesium.js"></script>
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <script src="https://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="cordova.js"></script>
+    <style>
+        @import url(Cesium/Widgets/widgets.css);
+
+        html, body, #cesiumContainer {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<!--<div class="switch" data-on-label="城市宜居指数" data-off-label="NO">-->
+    <!--<input type="checkbox" checked />-->
+<!--</div>-->
+
+
+<!--<div class="dropdown" >-->
+<!--<button type="button" class="btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">身边的遥感-->
+<!--<span class="caret"></span>-->
+<!--</button>-->
+<!--<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">-->
+<!--<li role="presentation">-->
+<!--<a role="menuitem" tabindex="-1" href="#" data-toggle="toggle" id="check1">长春冬天</a>-->
+<!--</li>-->
+<!--<li role="presentation">-->
+<!--<a role="menuitem" tabindex="-1" href="#">城市宜居指数</a>-->
+<!--</li>-->
+<!--<li role="presentation">-->
+<!--<a role="menuitem" tabindex="-1" href="#">农业领域专题</a>-->
+<!--</li>-->
+<!--<li role="presentation" class="divider"></li>-->
+<!--<li role="presentation">-->
+<!--<a role="menuitem" tabindex="-1" href="#">水利领域专题</a>-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->
+
+<div id="cesiumContainer" >
+
+</div>
+
+
+
+
+
+<script>
+    var username = 'terigen';
+    //if ($.cookie("username") == "terigen"||$.cookie("username") == "wtt") {
+    if ("username" == "terigen") {
+        addAdditionalLayerOption('citylife', cityProvider, 1);
+        addAdditionalLayerOption('nongye', nongyeProvieder, 1);
+        addAdditionalLayerOption('shuili', shuiliProvieder, 1);
+        addAdditionalLayerOption('water', waterProvieder, 1);
+        $("#check2").attr("disabled",false);
+        $("#check3").attr("disabled",false);
+        $("#check4").attr("disabled",false);
+        $("#ex2").slider("enable");
+        $("#ex3").slider("enable");
+        $("#ex4").slider("enable");
+    }
+    $("#check2").click(function(){
+        var camera = viewer.scene.camera;
+        camera.flyTo({
+            destination : Cesium.Cartesian3.fromDegrees(125.3762222,43.96905556, 363000.34038727246224)
+        });
+    });
+    //$('#check2').bootstrapToggle({
+    //  on: '开',
+    //  off: '关',
+    //  size:'mini'
+    //});
+    //城市宜居图层控制
+    $('#check2').change(function() {
+        console.log(myMap.get('citylife'));
+
+        if ($(this).prop('checked').toString() == 'true') {
+            imageryLayers.get(myMap.get('citylife')).show = true;
+        } else {
+            imageryLayers.get(myMap.get('citylife')).show = false;
+        }
+    });
+    var tdtProvider1= new Cesium.WebMapTileServiceImageryProvider({
+        url:'http://t4.tianditu.com/vec_c/wmts?',
+        layer:'vec',
+        style:'default',
+        format:'tiles',
+        tileMatrixSetID:'c',
+        maximumlevel:18,
+        alpha:1.0,
+        show:true,
+        tilingScheme:new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']
+    });
+    //web墨卡托矢量
+    var tdtProvider= new Cesium.WebMapTileServiceImageryProvider({
+        url:'http://t4.tianditu.com/vec_w/wmts?',
+        layer:'vec',
+        style:'default',
+        format:'tiles',
+        tileMatrixSetID:'w',
+        maximumlevel:3,
+        alpha:1.0,
+        show:true,
+    });
+    //web墨卡托影像
+    var tdtImageProvider= new Cesium.WebMapTileServiceImageryProvider({
+        url:'http://t4.tianditu.com/img_w/wmts?',
+        layer:'img',
+        style:'default',
+        format:'tiles',
+        tileMatrixSetID:'w',
+        maximumlevel:3,
+        alpha:1.0,
+        show:true,
+    });
+    //标注
+    var ciaProvider= new Cesium.WebMapTileServiceImageryProvider({
+        url:'http://t4.tianditu.com/cva_c/wmts?',
+        layer:'cva',
+        style:'default',
+        format:'tiles',
+        tileMatrixSetID:'c',
+        maximumlevel:18,
+        tilingScheme:new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18'],
+        alpha:1.0,
+        show:true
+    });
+    //geoserver实验
+    var geoProvider=new Cesium.WebMapTileServiceImageryProvider({
+        url : 'http://localhost:8080/geoserver/gwc/service/wmts',
+        layer: 'CGWX:JL101A_PMS_20160329105704_000006519_202_0007_001_L2_MSS_fusion',
+        format:'image/png',
+        style:'',
+        tileMatrixSetID:'EPSG:900913',
+        tileMatrixLabels : [ 'EPSG:900913:0', 'EPSG:900913:1', 'EPSG:900913:2', 'EPSG:900913:3', 'EPSG:900913:4', 'EPSG:900913:5', 'EPSG:900913:6','EPSG:900913:7', 'EPSG:900913:8', 'EPSG:900913:9', 'EPSG:900913:10','EPSG:900913:11', 'EPSG:900913:12', 'EPSG:900913:13', 'EPSG:900913:14', 'EPSG:900913:15'],
+        // tileMatrixLabels : ['EPSG:900913:12', 'EPSG:900913:13', 'EPSG:900913:14', 'EPSG:900913:15'],'EPSG:900913:0', 'EPSG:900913:1', 'EPSG:900913:2', 'EPSG:900913:3',
+        minimumlevel:4,
+        maximumlevel:15
+    });
+    var url='http://localhost:15671/GetTile.ashx?params={z}/{x}/{reverseY}/';
+    url=url+username;
+
+    $("#check1").click(function(){
+        var camera = viewer.scene.camera;
+        camera.flyTo({
+            destination : Cesium.Cartesian3.fromDegrees(125.3762222,43.96905556, 363000.34038727246224)
+        });
+    });
+    var ccProvider = new Cesium.UrlTemplateImageryProvider({
+        url : url,
+        credit : '冬日长春',
+        tilingScheme :  new Cesium.WebMercatorTilingScheme({
+            ellipsoid:Cesium.Ellipsoid.WGS84,
+            rectangleSouthwestInMeters:new Cesium.Cartesian2(-20037508.34,-20037508.34),
+            rectangleNortheastInMeters:new Cesium.Cartesian2(20037508.34,20037508.34)
+        }),
+        maximumLevel : 15,
+        rectangle : Cesium.Rectangle.fromDegrees(124.9998130458,43.416808210911825,125.62518811749352,44.1671902254)
+    });
+
+    //城市宜居指数
+    var urlcity = 'http://localhost:15671/GetCityLifeTile.ashx?params={z}/{x}/{reverseY}/';
+    var cityProvider = new Cesium.UrlTemplateImageryProvider({
+        url:urlcity,
+        credit:'宜居指数',
+        tilingScheme:new Cesium.WebMercatorTilingScheme({
+            ellipsoid:Cesium.Ellipsoid.WGS84,
+            rectangleSouthwestInMeters:new Cesium.Cartesian2(-20037508.34,-20037508.34),
+            rectangleNortheastInMeters:new Cesium.Cartesian2(20037508.34,20037508.34)
+        }),
+        maximumLevel : 15,
+        rectangle : Cesium.Rectangle.fromDegrees(125.0751353,43.7158072,125.4822472,44.0529308)
+    });
+    //农业
+    var urlNongye='http://localhost:15671/GetNongyeTile.ashx?params={z}/{x}/{reverseY}/';
+    urlNongye = urlNongye + username;
+    var nongyeProvieder = new Cesium.UrlTemplateImageryProvider({
+        url: urlNongye,
+        credit: '农业',
+        tilingScheme: new Cesium.WebMercatorTilingScheme({
+            ellipsoid: Cesium.Ellipsoid.WGS84,
+            rectangleSouthwestInMeters: new Cesium.Cartesian2(-20037508.34, -20037508.34),
+            rectangleNortheastInMeters: new Cesium.Cartesian2(20037508.34, 20037508.34)
+        }),
+        maximumLevel: 15,
+        rectangle: Cesium.Rectangle.fromDegrees(125.121167, 38.6873813, 127.190598, 40.3860802)
+    });
+    //水利
+    var urlShuili='http://localhost:15671/GetShuiliTile.ashx?params={z}/{x}/{reverseY}/';
+    var shuiliProvieder = new Cesium.UrlTemplateImageryProvider({
+        url: urlShuili,
+        credit: '水利',
+        tilingScheme: new Cesium.WebMercatorTilingScheme({
+            ellipsoid: Cesium.Ellipsoid.WGS84,
+            rectangleSouthwestInMeters: new Cesium.Cartesian2(-20037508.34, -20037508.34),
+            rectangleNortheastInMeters: new Cesium.Cartesian2(20037508.34, 20037508.34)
+        }),
+        maximumLevel: 12,
+        rectangle: Cesium.Rectangle.fromDegrees(122.28954,42.37878, 125.91521, 45.78674)
+    });
+    //水利-water
+    var urlwater='http://localhost:15671/water.ashx?params={z}/{x}/{reverseY}/';
+    var waterProvieder = new Cesium.UrlTemplateImageryProvider({
+        url: urlwater,
+        credit: 'water',
+        tilingScheme: new Cesium.WebMercatorTilingScheme({
+            ellipsoid: Cesium.Ellipsoid.WGS84,
+            rectangleSouthwestInMeters: new Cesium.Cartesian2(-20037508.34, -20037508.34),
+            rectangleNortheastInMeters: new Cesium.Cartesian2(20037508.34, 20037508.34)
+        }),
+        maximumLevel: 13,
+        rectangle: Cesium.Rectangle.fromDegrees(122.3866,42.3450, 125.8034, 45.4423)
+    });
+
+
+
+    var imageryViewModels=[];
+    imageryViewModels.push(new Cesium.ProviderViewModel({
+        name:'天地图地图',
+        iconUrl:Cesium.buildModuleUrl('Widgets/Images/ImageryProviders/tianditu.png'),
+        tooltip:'天地图web墨卡托矢量图',
+        creationFunction:function(){
+            return tdtProvider;
+        }
+    }));
+    imageryViewModels.push(new Cesium.ProviderViewModel({
+        name : '天地图影像',
+        iconUrl :Cesium.buildModuleUrl('Widgets/Images/ImageryProviders/bingAerial.png'),
+        tooltip : '天地图web墨卡托影像图',
+        creationFunction : function() {
+            return tdtImageProvider;
+        }
+    }));
+    var osmProvider=new Cesium.createOpenStreetMapImageryProvider({
+        url : 'https://a.tile.openstreetmap.org/'
+    });
+    imageryViewModels.push(new Cesium.ProviderViewModel({
+        name : 'OSM地图',
+        iconUrl : Cesium.buildModuleUrl('Widgets/Images/ImageryProviders/openStreetMap.png'),
+        tooltip : 'OpenStreetMap',
+        creationFunction : function() {
+            return osmProvider;
+        }
+    }));
+
+    function addAdditionalLayerOption(name, imageryProvider, alpha, show) {
+        var layer = imageryLayers.addImageryProvider(imageryProvider);
+        layer.alpha = Cesium.defaultValue(alpha,1);
+        layer.show = Cesium.defaultValue(show, true);
+        layer.name = name;
+        myMap.set(name, imageryLayers.indexOf(layer));
+        // Cesium.knockout.track(layer, ['alpha', 'show', 'name']);
+    }
+
+    Cesium.BingMapsApi.defaultKey = '5Vv41lJmAZXWbGIzEOr5~hRdyprq3YjnMm149t4PS5Q~AoyOxzxOxDEMLfugZcp_GC9JDW0nSH-gm4-xYM5erL0lkoMJTAM5hk6UBRoKrSWK';
+    var tdtProvider1= new Cesium.WebMapTileServiceImageryProvider({
+        url:'http://t4.tianditu.com/vec_c/wmts?',
+        layer:'vec',
+        style:'default',
+        format:'tiles',
+        tileMatrixSetID:'c',
+        maximumlevel:18,
+        alpha:1.0,
+        show:true,
+        tilingScheme:new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']
+    });
+    var viewer = new Cesium.Viewer('cesiumContainer',
+            {
+                imageryProvider: tdtProvider1,
+                animation: false,
+                timeline: false,
+                fullscreenButton: false,
+                geocoder: false,
+                selectionIndicator: false,
+                navigationInstructionsInitiallyVisible: false,
+                imageryProviderViewModels: imageryViewModels,
+                terrainProviderViewModels: [],
+            });
+</script>
+</body>
+</html>
